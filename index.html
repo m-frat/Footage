@@ -8,8 +8,8 @@
         body {
             margin: 0;
             padding: 0;
-            background-color: #000; /* Arka planı siyah yap */
-            overflow: hidden; /* Kaydırma çubuklarını gizle */
+            background-color: #000;
+            overflow: hidden;
         }
         .container {
             position: absolute;
@@ -20,20 +20,21 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            flex-direction: column;
         }
         img {
             position: absolute;
             top: 50%;
             left: 50%;
-            width: 100vw; /* Ekranın genişliğini doldur */
-            height: 100vh; /* Ekranın yüksekliğini doldur */
-            object-fit: cover; /* Resmin tüm alanı kaplamasını sağlar */
-            transform: translate(-50%, -50%); /* Resmi merkezler */
-            display: none; /* Varsayılan olarak resmi gizle */
+            width: 100vw;
+            height: 100vh;
+            object-fit: cover;
+            transform: translate(-50%, -50%);
+            display: none;
         }
         button {
             position: absolute;
-            bottom: 20px;
+            bottom: 60px;
             background-color: #5c0707;
             color: #fff;
             border: none;
@@ -41,38 +42,62 @@
             cursor: pointer;
             font-size: 16px;
             padding: 10px 20px;
-            z-index: 10; /* Butonu resmin üzerinde göstermek için */
+            z-index: 10;
         }
         button:hover {
             background-color: #000000;
+        }
+        .filename {
+            position: absolute;
+            bottom: 5px;
+            left: 5px;
+            font-size: 12px;
+            color: #fff;
+            font-weight: 300;
+            font-family: Arial, sans-serif;
+            z-index: 10;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <img id="randomImage" src="" alt="Rastgele Resim">
-        <button onclick="startBackgroundAudio()">Show me the footage</button>
+        <button id="actionButton" onclick="startBackgroundAudio()">Show me the footage</button>
+        <div class="filename">#1234</div>
     </div>
 
-    <!-- Ses dosyasını arka planda çalacak şekilde ekleyin -->
     <audio id="backgroundAudio" src="song.mp3" preload="auto"></audio>
 
     <script>
-        // Resimlerin toplam sayısı
         const totalImages = 2689;
         const imagePath = 'img/';
+        const buttonColor = '#5c0707';
 
         function getRandomImage() {
-            // Rastgele bir numara seçin
             const randomNumber = Math.floor(Math.random() * totalImages) + 1;
-            // Dosya adını oluşturun ve döndürün
             return imagePath + randomNumber + '.jpg';
         }
 
-        function loadRandomImage() {
+        function loadImageByNumber(number) {
             const imgElement = document.getElementById('randomImage');
-            imgElement.src = getRandomImage();
-            imgElement.style.display = 'block'; // Resmi görünür hale getir
+            const filenameElement = document.querySelector('.filename');
+            const imageUrl = imagePath + number + '.jpg';
+            
+            imgElement.src = imageUrl;
+            imgElement.style.display = 'block';
+
+            const fileNameWithoutExtension = '#' + number;
+            filenameElement.textContent = fileNameWithoutExtension;
+
+            if (fileNameWithoutExtension === '#666') {
+                filenameElement.style.color = buttonColor;
+            } else {
+                filenameElement.style.color = '#fff';
+            }
+        }
+
+        function loadRandomImage() {
+            loadImageByNumber(Math.floor(Math.random() * totalImages) + 1);
         }
 
         function reloadImage() {
@@ -82,13 +107,57 @@
         function startBackgroundAudio() {
             const audioElement = document.getElementById('backgroundAudio');
             if (audioElement) {
-                audioElement.volume = 0.2; // Ses seviyesini %20 yap
-                audioElement.play(); // Ses dosyasını oynat
-                reloadImage(); // Resmi yükle
+                audioElement.volume = 0.2;
+                audioElement.play();
+                reloadImage();
             }
         }
 
-        // Sayfa yüklendiğinde rastgele resmi göster
+        function toggleAudio() {
+            const audioElement = document.getElementById('backgroundAudio');
+            if (audioElement) {
+                if (audioElement.paused) {
+                    audioElement.volume = 0.2;
+                    audioElement.play();
+                } else {
+                    audioElement.pause();
+                }
+            }
+        }
+
+        const secretCode = 'mfluvsalp';
+        const easterEggCode = 'hailsatan';
+        const redirectCode = 'noid';
+        let inputCode = '';
+
+        function handleKeyPress(event) {
+            inputCode += event.key;
+            if (inputCode.endsWith(secretCode)) {
+                document.getElementById('actionButton').textContent = 'Alpişşşş<3';
+                inputCode = '';
+            }
+            if (inputCode.endsWith(easterEggCode)) {
+                loadImageByNumber(666);
+                const filenameElement = document.querySelector('.filename');
+                filenameElement.style.color = buttonColor;
+                inputCode = '';
+            }
+            if (inputCode.endsWith(redirectCode)) {
+                window.location.href = 'https://www.youtube.com/watch?v=sticXkHxZC4';
+                inputCode = '';
+            }
+            if (inputCode.length > Math.max(secretCode.length, easterEggCode.length, redirectCode.length)) {
+                inputCode = inputCode.slice(-Math.max(secretCode.length, easterEggCode.length, redirectCode.length));
+            }
+
+            if (event.code === 'Space') {
+                event.preventDefault();
+                toggleAudio();
+            }
+        }
+
+        document.addEventListener('keydown', handleKeyPress);
+
         window.onload = loadRandomImage;
     </script>
 </body>
